@@ -89,7 +89,7 @@ function UploadPage() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       const response = await axios.post(
-        "http://localhost:5000/api/upload",
+        "https://whatsapp-analyzer-blxr.onrender.com",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
