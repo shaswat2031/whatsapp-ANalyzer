@@ -71,10 +71,10 @@ function UploadPage() {
     setTimeout(() => setSuccess(""), 3000);
   };
 
-  const handleUpload = async () => {
+const handleUpload = async () => {
     if (!file) {
-      setError("Please select a file to upload");
-      return;
+        setError("Please select a file to upload");
+        return;
     }
 
     setIsUploading(true);
@@ -84,41 +84,45 @@ function UploadPage() {
     const formData = new FormData();
     formData.append("chatFile", file);
 
-    try {
-      // Simulate processing time for better UX feedback
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const response = await axios.post(
-        "https://whatsapp-analyzer-blxr.onrender.com",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          timeout: 30000, // 30 second timeout
-        }
-      );
+    // Define API URLs - using the production URL for now
+    const API_BASE_URL = "https://whatsapp-analyzer-blxr.onrender.com";
+    const API_ENDPOINT = "/api/upload"; // Match the endpoint in server.js
 
-      localStorage.setItem("chatAnalysis", JSON.stringify(response.data));
-      setSuccess("Analysis complete! Redirecting...");
-      
-      // Brief delay to show success message
-      setTimeout(() => navigate("/results"), 1000);
-    } catch (err) {
-      console.error("Upload error:", err);
-      
-      if (err.code === 'ECONNABORTED') {
-        setError("Request timeout. Please try again with a smaller file.");
-      } else if (err.response?.status === 413) {
-        setError("File too large. Please upload a file smaller than 10MB.");
-      } else {
-        setError(
-          err.response?.data?.error ||
-          "Error processing file. Please ensure it's a valid WhatsApp export."
+    try {
+        // Simulate processing time for better UX feedback
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const response = await axios.post(
+            `${API_BASE_URL}${API_ENDPOINT}`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+                timeout: 30000, // 30 second timeout
+            }
         );
-      }
+
+        localStorage.setItem("chatAnalysis", JSON.stringify(response.data));
+        setSuccess("Analysis complete! Redirecting...");
+        
+        // Brief delay to show success message
+        setTimeout(() => navigate("/results"), 1000);
+    } catch (err) {
+        console.error("Upload error:", err);
+        
+        if (err.code === 'ECONNABORTED') {
+            setError("Request timeout. Please try again with a smaller file.");
+        } else if (err.response?.status === 413) {
+            setError("File too large. Please upload a file smaller than 10MB.");
+        } else {
+            setError(
+                err.response?.data?.error ||
+                "Error processing file. Please ensure it's a valid WhatsApp export."
+            );
+        }
     } finally {
-      setIsUploading(false);
+        setIsUploading(false);
     }
-  };
+};
 
   const handleRemoveFile = () => {
     setFile(null);
